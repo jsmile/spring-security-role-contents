@@ -10,14 +10,14 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 @Configuration
 @EnableWebMvc
 @ComponentScan( basePackages="com.jsmile.springsecurity" )
-public class DemoAppConfig
+public class AppConfig
 {
 	// define a bean for ViewResolver
 	@Bean
 	public ViewResolver viewResolver() 
 	{
 		InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
-		viewResolver.setPrefix( "/WEB-INF/view/" );
+		viewResolver.setPrefix( "/WEB-INF/views/" );
 		viewResolver.setSuffix( ".jsp" );
 		
 		return viewResolver;

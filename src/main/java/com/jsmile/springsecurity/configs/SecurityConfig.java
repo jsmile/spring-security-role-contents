@@ -10,7 +10,7 @@ import org.springframework.security.core.userdetails.User.UserBuilder;
 
 @Configuration
 @EnableWebSecurity
-public class DemoSecurityConfig extends WebSecurityConfigurerAdapter
+public class SecurityConfig extends WebSecurityConfigurerAdapter
 {
 
 	// configure users( memory, DB, LDAP )
@@ -22,8 +22,8 @@ public class DemoSecurityConfig extends WebSecurityConfigurerAdapter
 		
 		_auth.inMemoryAuthentication()
 					.withUser( users.username( "john" ).password( "test123" ).roles( "EMPLOYEE" ) )
-					.withUser( users.username( "marry" ).password( "test123" ).roles( "MANAGER" ) )
-					.withUser( users.username( "susan" ).password( "test123" ).roles( "ADMIN" ) );
+					.withUser( users.username( "marry" ).password( "test123" ).roles( "EMPLOYEE", "MANAGER" ) )
+					.withUser( users.username( "susan" ).password( "test123" ).roles( "EMPLOYEE", "ADMIN" ) );
 	}
 
 	
@@ -31,15 +31,35 @@ public class DemoSecurityConfig extends WebSecurityConfigurerAdapter
 	@Override
 	protected void configure( HttpSecurity _http ) throws Exception
 	{
-		// Restrict access based on the HttpServletRequest
+/*		
+		// Restrict all access based on the HttpServletRequest
 		_http.authorizeRequests()
-						.anyRequest().authenticated()
+						.anyRequest().authenticated()	// check all accesses
 					.and()
 					.formLogin()
 						.loginPage( "/showLoginPage" )
 						.loginProcessingUrl( "/authenticateTheUser" ).permitAll()
 					.and()
 					.logout().permitAll();
+*/		
+
+		// Restrict accesses based on the HttpServletRequest without a home page.
+		_http.authorizeRequests()
+					.antMatchers( "/" ).permitAll()		// no check of landing page
+						.antMatchers( "/employees" ).hasRole( "EMPLOYEE" )
+						.antMatchers( "/leaders/**" ).hasRole( "MANAGER" )
+						.antMatchers( "/systems/**" ).hasRole( "ADMIN" )
+					.and()
+					.formLogin()
+						.loginPage( "/showLoginPage" )
+						.loginProcessingUrl( "/authenticateTheUser" ).permitAll()
+					.and()
+					.logout()
+						.logoutSuccessUrl( "/" ).permitAll()		// after successful logout
+					.and()
+					.exceptionHandling()
+						.accessDeniedPage( "/access-denied" );	// access denied
+						
 	}
 
 }

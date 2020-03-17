@@ -12,6 +12,13 @@ public class LoginController
 	{
 		System.out.println( "\n#### Show Login Page ####" );
 		return "plain-login";
+	}
+	
+	@GetMapping( "/access-denied" )
+	public String showAccessDenied() 
+	{
+		System.out.println( "\n#### Show Access Denied Page ####" );
+		return "access-denied";
 	}	
 
 }
